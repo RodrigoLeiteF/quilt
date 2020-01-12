@@ -92,9 +92,12 @@ readPackages().forEach(({packageName, packageJSON, packageJSONPath}) => {
     });
 
     it('specifies a repository deep-linking into the Quilt monorepo', () => {
-      const expectedRepository = compile(packageJSONTemplate.repository);
+      const expectedRepository = {
+        ...packageJSONTemplate.repository,
+        directory: compile(packageJSONTemplate.repository.directory),
+      };
 
-      expect(packageJSON.repository).toBe(expectedRepository);
+      expect(packageJSON.repository).toStrictEqual(expectedRepository);
     });
 
     it('specifies scripts, including build', () => {
