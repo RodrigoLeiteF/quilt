@@ -89,7 +89,9 @@ readPackages().forEach(({packageName, packageJSON, packageJSONPath}) => {
     });
 
     it('specifies a repository deep-linking into the Quilt monorepo', () => {
-      expect(packageJSON.repository).toStrictEqual(expectedPackageJSON.repository);
+      expect(packageJSON.repository).toStrictEqual(
+        expectedPackageJSON.repository,
+      );
     });
 
     it('specifies scripts, including build', () => {
@@ -111,7 +113,7 @@ readPackages().forEach(({packageName, packageJSON, packageJSONPath}) => {
 
   function compileTemplate() {
     return JSON.parse(
-      rawPackageJSONTemplate.replace(PACKAGE_NAME_PATTERN, packageName)
+      rawPackageJSONTemplate.replace(PACKAGE_NAME_PATTERN, packageName),
     );
   }
 });
