@@ -48,7 +48,7 @@ readPackages().forEach(({packageName, packageJSON, packageJSONPath}) => {
       expect(packageJSON.bugs).toStrictEqual(packageJSONTemplate.bugs);
     });
 
-    it('specifies a dependencies', () => {
+    it('specifies dependencies', () => {
       expect(packageJSON.dependencies).not.toStrictEqual({});
     });
 
@@ -56,7 +56,7 @@ readPackages().forEach(({packageName, packageJSON, packageJSONPath}) => {
       expect(packageJSON.description).not.toBeUndefined();
     });
 
-    it('specifies files', () => {
+    it('specifies publishable files', () => {
       if(packageName == 'polyfills') return; // FIXME
 
       expect(packageJSON.files).toContain('dist/*');
@@ -85,7 +85,7 @@ readPackages().forEach(({packageName, packageJSON, packageJSONPath}) => {
       expect(packageJSON.name).toBe(expectedName);
     });
 
-    it('specifies the expected publishConfig', () => {
+    it('specifies Shopify‘s public publishConfig', () => {
       expect(packageJSON.publishConfig).toStrictEqual(
         packageJSONTemplate.publishConfig,
       );
