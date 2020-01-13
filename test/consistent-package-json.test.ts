@@ -75,8 +75,6 @@ readPackages().forEach(({packageName, packageJSON, packageJSONPath}) => {
     });
 
     it('specifies the expected main', () => {
-      if(packageName === 'graphql-persisted') return; // FIXME: Address this in graphql-persisted
-
       expect(packageJSON.main).toBe(expectedPackageJSON.main);
     });
 
@@ -103,8 +101,6 @@ readPackages().forEach(({packageName, packageJSON, packageJSONPath}) => {
     });
 
     it('specifies the expected types', () => {
-      if(packageName === 'graphql-persisted') return; // FIXME
-
       expect(packageJSON.types).toBe(expectedPackageJSON.types);
     });
 
