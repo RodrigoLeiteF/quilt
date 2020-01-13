@@ -61,8 +61,6 @@ readPackages().forEach(({packageName, packageJSON, packageJSONPath}) => {
     });
 
     it('specifies publishable files', () => {
-      if(packageName == 'polyfills') return; // FIXME
-
       expect(packageJSON.files).toStrictEqual(
         expect.arrayContaining(expectedPackageJSON.files),
       );
