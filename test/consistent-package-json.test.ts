@@ -1,6 +1,6 @@
 import {dirname, join, relative, resolve} from 'path';
 
-import {readJSONSync} from 'fs-extra';
+import {readFileSync, readJSONSync} from 'fs-extra';
 import glob from 'glob';
 
 const KNOWN_TEMPLATE_KEYS = [
@@ -23,14 +23,16 @@ const KNOWN_TEMPLATE_KEYS = [
 
 const ROOT_PATH = resolve(__dirname, '..');
 const packageJSONTemplatePath = join('templates', 'package.hbs.json');
-const packageJSONTemplate = readJSONSync(
+const rawPackageJSONTemplate = readFileSync(
   join(ROOT_PATH, packageJSONTemplatePath),
+  {encoding: 'utf8'},
 );
+const PACKAGE_NAME_PATTERN = /{{name}}/g;
 
 // eslint-disable-next-line jest/valid-describe
 describe(packageJSONTemplatePath, () => {
   it('has only known keys', () => {
-    const keys = Object.keys(packageJSONTemplate).sort();
+    const keys = Object.keys(JSON.parse(rawPackageJSONTemplate)).sort();
 
     // Template keys should match exactly. If updating it, remember to update tests!
     expect(keys).toStrictEqual(KNOWN_TEMPLATE_KEYS);
@@ -38,14 +40,16 @@ describe(packageJSONTemplatePath, () => {
 });
 
 readPackages().forEach(({packageName, packageJSON, packageJSONPath}) => {
+  const expectedPackageJSON = compileTemplate();
+
   // eslint-disable-next-line jest/valid-describe
   describe(packageJSONPath, () => {
     it('specifies Shopify as author', () => {
-      expect(packageJSON.author).toBe(packageJSONTemplate.author);
+      expect(packageJSON.author).toBe(expectedPackageJSON.author);
     });
 
     it('specifies Quilt Issues as bugs URL', () => {
-      expect(packageJSON.bugs).toStrictEqual(packageJSONTemplate.bugs);
+      expect(packageJSON.bugs).toStrictEqual(expectedPackageJSON.bugs);
     });
 
     it('specifies dependencies', () => {
@@ -64,44 +68,35 @@ readPackages().forEach(({packageName, packageJSON, packageJSONPath}) => {
     });
 
     it('specifies Quilt deep-link homepage', () => {
-      const expectedHomepage = compile(packageJSONTemplate.homepage);
-
-      expect(packageJSON.homepage).toBe(expectedHomepage);
+      expect(packageJSON.homepage).toBe(expectedPackageJSON.homepage);
     });
 
     it('specifies the MIT license', () => {
-      expect(packageJSON.license).toBe(packageJSONTemplate.license);
+      expect(packageJSON.license).toBe(expectedPackageJSON.license);
     });
 
     it('specifies the expected main', () => {
       if(packageName === 'graphql-persisted') return; // FIXME: Address this in graphql-persisted
 
-      expect(packageJSON.main).toBe(packageJSONTemplate.main);
+      expect(packageJSON.main).toBe(expectedPackageJSON.main);
     });
 
     it('specifies name matching scope and path', () => {
-      const expectedName = compile(packageJSONTemplate.name);
-
-      expect(packageJSON.name).toBe(expectedName);
+      expect(packageJSON.name).toBe(expectedPackageJSON.name);
     });
 
     it('specifies Shopify‘s public publishConfig', () => {
       expect(packageJSON.publishConfig).toStrictEqual(
-        packageJSONTemplate.publishConfig,
+        expectedPackageJSON.publishConfig,
       );
     });
 
     it('specifies a repository deep-linking into the Quilt monorepo', () => {
-      const expectedRepository = {
-        ...packageJSONTemplate.repository,
-        directory: compile(packageJSONTemplate.repository.directory),
-      };
-
-      expect(packageJSON.repository).toStrictEqual(expectedRepository);
+      expect(packageJSON.repository).toStrictEqual(expectedPackageJSON.repository);
     });
 
     it('specifies scripts, including build', () => {
-      expect(packageJSON.scripts.build).toBe(packageJSONTemplate.scripts.build);
+      expect(packageJSON.scripts.build).toBe(expectedPackageJSON.scripts.build);
     });
 
     it('specifies if it has sideEffects', () => {
@@ -114,7 +109,7 @@ readPackages().forEach(({packageName, packageJSON, packageJSONPath}) => {
     it('specifies the expected types', () => {
       if(packageName === 'graphql-persisted') return; // FIXME
 
-      expect(packageJSON.types).toBe(packageJSONTemplate.types);
+      expect(packageJSON.types).toBe(expectedPackageJSON.types);
     });
 
     it('specifies a version', () => {
@@ -122,8 +117,10 @@ readPackages().forEach(({packageName, packageJSON, packageJSONPath}) => {
     });
   });
 
-  function compile(string) {
-    return string.replace('{{name}}', packageName);
+  function compileTemplate() {
+    return JSON.parse(
+      rawPackageJSONTemplate.replace(PACKAGE_NAME_PATTERN, packageName)
+    );
   }
 });
 
