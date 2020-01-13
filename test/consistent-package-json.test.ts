@@ -63,8 +63,9 @@ readPackages().forEach(({packageName, packageJSON, packageJSONPath}) => {
     it('specifies publishable files', () => {
       if(packageName == 'polyfills') return; // FIXME
 
-      expect(packageJSON.files).toContain('dist/*');
-      expect(packageJSON.files).toContain('!tsconfig.tsbuildinfo');
+      expect(packageJSON.files).toStrictEqual(
+        expect.arrayContaining(expectedPackageJSON.files),
+      );
     });
 
     it('specifies Quilt deep-link homepage', () => {
