@@ -99,9 +99,6 @@ readPackages().forEach(({packageName, packageJSON, packageJSONPath}) => {
     });
 
     it('specifies if it has sideEffects', () => {
-      const exceptions = ['csrf-token-fetcher', 'dates', 'react-effect', 'react-google-analytics', 'useful-types']
-      if (exceptions.includes(packageName)) return; // FIXME
-
       expect(packageJSON.sideEffects).toBe(Boolean(packageJSON.sideEffects));
     });
 
