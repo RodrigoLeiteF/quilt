@@ -98,7 +98,7 @@ readPackages().forEach(({packageName, packageJSON, packageJSONPath}) => {
       expect(packageJSON.scripts.build).toBe(expectedPackageJSON.scripts.build);
     });
 
-    it('specifies if it has sideEffects', () => {
+    it('specifies if webpack can tree-shake it, via sideEffects', () => {
       expect(packageJSON.sideEffects).toBe(Boolean(packageJSON.sideEffects));
     });
 
